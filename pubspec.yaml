@@ -1,0 +1,52 @@
+name: splittrip
+description: "SplitTrip — minimalist shared-expense calculator. Offline-first."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+  flutter_riverpod: ^2.5.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  lucide_icons: ^0.257.0
+  flutter_svg: ^2.0.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/fonts/
+    - assets/logo.svg
+
+  fonts:
+    - family: OverpassMono
+      fonts:
+        - asset: assets/fonts/OverpassMono.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  background_color_ios: "#FAFAFA"
+  adaptive_icon_background: "#FAFAFA"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  web:
+    generated: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#FAFAFA"
+    theme_color: "#111111"
