@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/app_info.dart';
+import 'core/locale_controller.dart';
 import 'core/settings_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/parties/data/party_repository.dart';
@@ -32,11 +33,12 @@ Future<void> main() async {
   );
 }
 
-class SplitTripApp extends StatelessWidget {
+class SplitTripApp extends ConsumerWidget {
   const SplitTripApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final override = ref.watch(localeControllerProvider);
     return MaterialApp(
       title: kAppName,
       debugShowCheckedModeBanner: false,
@@ -48,6 +50,9 @@ class SplitTripApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: override,
+      // Ukrainian by default; English only when chosen or the system is English.
+      localeResolutionCallback: (locale, supported) => resolveAppLocale(locale),
       home: const SplashScreen(),
     );
   }

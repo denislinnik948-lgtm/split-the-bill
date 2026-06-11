@@ -7,6 +7,7 @@ class SettingsRepository {
 
   static const String boxName = 'settings';
   static const String _onboardingKey = 'onboardingDone';
+  static const String _localeKey = 'localeCode';
 
   final Box _box;
 
@@ -14,6 +15,12 @@ class SettingsRepository {
       _box.get(_onboardingKey, defaultValue: false) as bool;
 
   Future<void> markOnboardingDone() => _box.put(_onboardingKey, true);
+
+  /// Manually selected language code ('uk'/'en'), or null to follow the system.
+  String? get localeCode => _box.get(_localeKey) as String?;
+
+  Future<void> setLocaleCode(String? code) =>
+      code == null ? _box.delete(_localeKey) : _box.put(_localeKey, code);
 }
 
 /// Overridden in `main` once Hive is ready.

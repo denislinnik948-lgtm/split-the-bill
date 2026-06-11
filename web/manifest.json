@@ -1,6 +1,6 @@
 {
     "name": "Split the Bill",
-    "short_name": "Split the Bill",
+    "short_name": "STB",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

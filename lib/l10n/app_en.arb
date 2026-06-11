@@ -65,6 +65,8 @@
   "aboutItem": "About",
   "privacyItem": "Privacy Policy",
   "termsItem": "Terms of Use",
+  "languageItem": "Language",
+  "languageSystem": "System default",
   "versionLabel": "Version {version}",
   "@versionLabel": {
     "placeholders": { "version": { "type": "String" } }

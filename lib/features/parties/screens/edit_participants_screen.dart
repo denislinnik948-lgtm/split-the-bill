@@ -66,6 +66,19 @@ class _EditParticipantsScreenState
   }
 
   void _next(BuildContext context) {
+    // Commit whatever is still typed in the name field so a participant the
+    // user typed but didn't tap "+" for isn't lost.
+    final pending = _participantController.text.trim();
+    if (pending.isNotEmpty) {
+      final controller = ref.read(partiesControllerProvider.notifier);
+      if (_editingId != null) {
+        controller.renameParticipant(_editingId!, pending);
+      } else {
+        controller.addParticipant(pending);
+      }
+      _participantController.clear();
+      _editingId = null;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const EditExpensesScreen()),
     );
@@ -87,7 +100,13 @@ class _EditParticipantsScreenState
     final draft = ref.watch(partiesControllerProvider).draft;
     if (draft == null) return const Scaffold();
 
-    final canProceed = draft.participants.length >= 2;
+    // Count a typed-but-not-yet-added name towards the threshold so "Next"
+    // enables (and will commit it) without forcing a tap on "+".
+    final pendingCount =
+        (_editingId == null && _participantController.text.trim().isNotEmpty)
+            ? 1
+            : 0;
+    final canProceed = draft.participants.length + pendingCount >= 2;
 
     return Scaffold(
       body: SafeArea(
@@ -121,6 +140,7 @@ class _EditParticipantsScreenState
                     hint: l10n.participantNameHint,
                     editing: _editingId != null,
                     onSubmit: _submitParticipant,
+                    onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 4),
                   ...draft.participants.map(
@@ -168,6 +188,7 @@ class _AddRow extends StatelessWidget {
     required this.hint,
     required this.editing,
     required this.onSubmit,
+    required this.onChanged,
   });
 
   final TextEditingController controller;
@@ -175,6 +196,7 @@ class _AddRow extends StatelessWidget {
   final String hint;
   final bool editing;
   final VoidCallback onSubmit;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +208,7 @@ class _AddRow extends StatelessWidget {
             focusNode: focusNode,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.done,
+            onChanged: onChanged,
             onSubmitted: (_) => onSubmit(),
             style: AppTextStyles.body,
             cursorColor: AppColors.primaryText,

@@ -56,5 +56,7 @@
   "aboutItem": "Про застосунок",
   "privacyItem": "Політика конфіденційності",
   "termsItem": "Умови використання",
+  "languageItem": "Мова",
+  "languageSystem": "Системна",
   "versionLabel": "Версія {version}"
 }
