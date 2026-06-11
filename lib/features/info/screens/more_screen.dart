@@ -88,7 +88,7 @@ class MoreScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 children: [
-                  Text(l10n.infoTitle, style: AppTextStyles.h1),
+                  Text(l10n.menuTitle, style: AppTextStyles.h1),
                   const SizedBox(height: 24),
                   _InfoRow(
                     label: l10n.languageItem,

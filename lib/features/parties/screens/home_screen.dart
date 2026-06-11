@@ -93,10 +93,10 @@ class HomeScreen extends ConsumerWidget {
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const MoreScreen()),
                         ),
-                        icon: const Icon(LucideIcons.info,
+                        icon: const Icon(LucideIcons.menu,
                             size: 24, color: AppColors.secondaryText),
                         splashRadius: 22,
-                        tooltip: l10n.infoTitle,
+                        tooltip: l10n.menuTitle,
                       ),
                     ],
                   ),
