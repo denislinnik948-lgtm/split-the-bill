@@ -26,7 +26,6 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "payerLabel": "Paid by",
-  "payerRequired": "Choose who paid",
   "payerTitle": "Who paid?",
   "splitTitle": "Split among",
   "doneAction": "Done",

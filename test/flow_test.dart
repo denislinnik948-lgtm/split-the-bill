@@ -101,6 +101,45 @@ void main() {
     expect(saved.expenses.single.amount, 600);
   });
 
+  testWidgets('Save without a payer opens the payer picker, then saves',
+      (tester) async {
+    await tester.pumpWidget(app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('New Party'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).first, 'Trip');
+    await tester.pumpAndSettle();
+    await addParticipant(tester, 'Ann');
+    await addParticipant(tester, 'Bob');
+
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+
+    // Enter an amount but deliberately do NOT choose a payer.
+    await tester.enterText(find.byType(TextField).at(2), '600');
+    await tester.pumpAndSettle();
+
+    // Tapping Save with no payer opens the picker directly (no inline error).
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(Dialog), matching: find.text('Ann')),
+      findsOneWidget,
+    );
+
+    // Choosing a payer closes the picker and completes the save.
+    await tester.tap(
+      find.descendant(of: find.byType(Dialog), matching: find.text('Ann')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    expect(find.text('600 ₴'), findsWidgets);
+    expect(repo.getDraft()?.expenses.length, 1);
+  });
+
   testWidgets('starting a new party while a draft exists asks to confirm',
       (tester) async {
     await tester.pumpWidget(app());

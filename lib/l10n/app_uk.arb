@@ -17,7 +17,6 @@
   "splitForAll": "Для всіх",
   "splitForSome": "Для {count}",
   "payerLabel": "Платник",
-  "payerRequired": "Оберіть платника",
   "payerTitle": "Хто платив?",
   "splitTitle": "Ділити між",
   "doneAction": "Готово",

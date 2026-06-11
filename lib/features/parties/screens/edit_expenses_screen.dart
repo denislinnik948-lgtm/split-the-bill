@@ -37,7 +37,6 @@ class _EditExpensesScreenState extends ConsumerState<EditExpensesScreen> {
   List<String> _excludedIds = [];
   String? _editingExpenseId;
   String? _amountError;
-  String? _payerError;
 
   @override
   void initState() {
@@ -64,23 +63,28 @@ class _EditExpensesScreenState extends ConsumerState<EditExpensesScreen> {
       _payerId = null;
       _excludedIds = [];
       _amountError = null;
-      _payerError = null;
     });
   }
 
-  void _submit(List<Participant> participants) {
+  Future<void> _submit(List<Participant> participants) async {
     final l10n = AppLocalizations.of(context);
     final amount = _parseAmount(_amountController.text);
-    final payerOk =
-        _payerId != null && participants.any((p) => p.id == _payerId);
-    if (amount == null || amount <= 0 || !payerOk) {
-      setState(() {
-        _amountError =
-            (amount == null || amount <= 0) ? l10n.amountInvalid : null;
-        _payerError = payerOk ? null : l10n.payerRequired;
-      });
+    if (amount == null || amount <= 0) {
+      setState(() => _amountError = l10n.amountInvalid);
       return;
     }
+    setState(() => _amountError = null);
+
+    // No payer chosen yet: open the picker straight away instead of nagging
+    // with an inline error, then finish saving once one is selected.
+    var payerOk = _payerId != null && participants.any((p) => p.id == _payerId);
+    if (!payerOk) {
+      await _pickPayer(participants);
+      if (!mounted) return;
+      payerOk = _payerId != null && participants.any((p) => p.id == _payerId);
+      if (!payerOk) return; // dismissed without choosing — stay on the composer
+    }
+
     final title = _titleController.text.trim();
     ref.read(partiesControllerProvider.notifier).upsertExpense(
           Expense(
@@ -102,7 +106,6 @@ class _EditExpensesScreenState extends ConsumerState<EditExpensesScreen> {
       _payerId = e.payerId;
       _excludedIds = [...e.excludedParticipantIds];
       _amountError = null;
-      _payerError = null;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (focusAmount) {
@@ -124,10 +127,7 @@ class _EditExpensesScreenState extends ConsumerState<EditExpensesScreen> {
       selectedId: _payerId ?? '',
     );
     if (picked != null) {
-      setState(() {
-        _payerId = picked;
-        _payerError = null;
-      });
+      setState(() => _payerId = picked);
     }
   }
 
@@ -228,7 +228,6 @@ class _EditExpensesScreenState extends ConsumerState<EditExpensesScreen> {
                     amountFocus: _amountFocus,
                     titleHint: l10n.expenseTitleHint,
                     amountError: _amountError,
-                    payerError: _payerError,
                     payerText: payerName ?? l10n.payerLabel,
                     splitText: _excludedIds.isEmpty
                         ? l10n.splitForAll
@@ -336,7 +335,6 @@ class _Composer extends StatelessWidget {
     required this.amountFocus,
     required this.titleHint,
     required this.amountError,
-    required this.payerError,
     required this.payerText,
     required this.splitText,
     required this.onPickPayer,
@@ -352,7 +350,6 @@ class _Composer extends StatelessWidget {
   final FocusNode amountFocus;
   final String titleHint;
   final String? amountError;
-  final String? payerError;
   final String payerText;
   final String splitText;
   final VoidCallback onPickPayer;
@@ -426,10 +423,6 @@ class _Composer extends StatelessWidget {
             ),
           ],
         ),
-        if (payerError != null) ...[
-          const SizedBox(height: 8),
-          Text(payerError!, style: AppTextStyles.caption),
-        ],
         const SizedBox(height: 16),
         SecondaryButton(
           label: saveLabel,
